@@ -1,9 +1,20 @@
-import React from 'react'
 
-const shopContex = () => {
-  return (
-    <div>shopContex</div>
-  )
-}
+import { createContext, useState } from "react";
+       
+export const ShopContext = createContext();
 
-export default shopContex
+import {productsData } from '../../data.jsx';
+
+export const ShopContextProvider = ({children}) => {
+    const[products, setProducts] = useState(productsData);
+    
+    const shopContextValue = {
+        products: productsData,
+    };
+
+    return (
+        <ShopContext.Provider value={shopContextValue}>
+            {children}
+        </ShopContext.Provider>
+    );
+};
