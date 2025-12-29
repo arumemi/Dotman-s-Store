@@ -35,7 +35,7 @@ export const productsData = [{
 },{
     id: 4,
     image : img4,
-    title: 'Relógio Inteligente para Crianças com Rastreamento GPS, Mantenha seus filhos seguros e conectados com este relógio inteligente',
+    title: 'Relógio Inteligente para Crianças com Rastreamento GPS, Mantenha seus filhos seguros e conectados com este relógio inteligent',
     price: 49.99,
     category: 'Wearable',
 },{
