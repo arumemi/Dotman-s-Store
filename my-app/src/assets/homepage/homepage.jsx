@@ -2,6 +2,9 @@ import React from 'react'
 import Hero from '../components/Hero'
 import ProductList from '../components/productList'
 import Banner from '../components/banner.jsx'
+import Cart from '../cart/cart.jsx'
+
+
 
 const homepage = () => {
   return (
@@ -9,7 +12,11 @@ const homepage = () => {
       
       <Hero/>
       <ProductList/>
-       <Banner/>
+      <Banner/>
+      <Cart/>
+      
+
+      
     </div>
   )
 }

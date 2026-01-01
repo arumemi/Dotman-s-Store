@@ -15,7 +15,7 @@ const NavBar = () => {
   const { totalItems } = useContext(ShopContext);
 
   return (
-    <nav className='bg-red-400 sticky top-0 z-50 shadow-md'>
+    <nav className='bg-blue-400 sticky top-0 z-50 shadow-md'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo */}
@@ -38,7 +38,7 @@ const NavBar = () => {
 
           {/* Mobile Menu Button - Toggles hamburger/close icon */}
           <button 
-            className='md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-100 hover:bg-red-500 transition-colors duration-200'
+            className='md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-100 hover:bg-blue-500 transition-colors duration-200'
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label='Toggle menu'
           >
@@ -56,19 +56,19 @@ const NavBar = () => {
 
       {/* Mobile Menu - Conditionally rendered when isMenuOpen is true */}
       {isMenuOpen && (
-        <div className='md:hidden bg-red-500'>
+        <div className='md:hidden bg-blue-500'>
           <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>
-            <Link to='/' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-red-600 transition-colors duration-200'>
+            <Link to='/' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200'>
               HOME
             </Link>
-            <div className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-red-600 transition-colors duration-200 cursor-pointer'>
+            <div className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200 cursor-pointer'>
               PRODUTO
             </div>
-            <div className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-red-600 transition-colors duration-200 cursor-pointer'>
+            <div className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200 cursor-pointer'>
               CONTACTO
             </div>
             {/* Mobile cart link with dynamic item count */}
-            <Link to='/cart' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-red-600 transition-colors duration-200'>
+            <Link to='/cart' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200'>
               CARRINHO({totalItems})
             </Link>
           </div>

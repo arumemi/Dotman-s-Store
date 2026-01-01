@@ -40,8 +40,8 @@ const productList = () => {
               </div>
               
               {/* Add to cart button - calls addToCart with product object */}
-              <button onClick={() => addToCart(product)} className='mt-auto w-full bg-red-500 hover:bg-red-700 active:bg-red-800 text-black font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-300'>
-                Adicionar ao Carrinho
+              <button onClick={() => addToCart(product)} className='mt-auto w-full bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-black font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-300'>
+                Add to cart
               </button>
             </div>
           )

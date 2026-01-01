@@ -41,7 +41,7 @@ export const productsData = [{
 },{
     id: 5,
     image : img5,
-    title: 'Smartphone Nothing Phone (1) com Design Transparente, Experimente inovação e estilo com este smartphone exclusivo',
+    title: 'the best phone in the world,',
     price: 399.99,
     category: 'Smartphone',
 },{
