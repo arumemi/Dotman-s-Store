@@ -19,12 +19,14 @@ export const productsData = [{
     title: 'Óculos de Realidade Virtual ,Experimente realidade virtual imersiva com estes óculos 3D ',
     price: 59.99,
     category: 'Virtual Reality',
+    isNew: true,
 },{
     id: 2,
     image : img2,
     title: 'Fones de Ouvido Sem Fio Bluetooth 5.0, Desfrute de som nítido e conexão estável com estes fones de ouvido sem fio',
     price: 29.99,
     category: 'Audio',
+    onSale: true,
 },
 {
     id: 3,
@@ -32,6 +34,7 @@ export const productsData = [{
     title: 'Fones de Ouvido JBL com Cancelamento de Ruído, Mergulhe na música com estes fones de ouvido JBL de alta qualidade',
     price: 99.99,
     category: 'Audio',
+    outOfStock: true,
 },{
     id: 4,
     image : img4,
@@ -44,6 +47,7 @@ export const productsData = [{
     title: 'the best phone in the world,',
     price: 399.99,
     category: 'Smartphone',
+    onSale: true,
 },{
     id: 6,
     image : img6,
@@ -56,12 +60,14 @@ export const productsData = [{
     title: 'iPhone 14 Pro Max com Câmera Avançada, Capture momentos incríveis com este smartphone premium da Apple',
     price: 1099.99,
     category: 'Smartphone',
+    outOfStock: true,
 },{
     id: 8,
     image : img8,
     title: 'Google Pixel 9 com Câmera Computacional, Tire fotos impressionantes com este smartphone inovador do Google',
     price: 799.99,
     category: 'Smartphone',
+    isNew: true,
 },{
     id: 9,
     image : img9,
@@ -74,18 +80,21 @@ export const productsData = [{
     title: 'Óculos Inteligentes com Realidade Aumentada, Explore o mundo digital com estes óculos inteligentes de última geração',
     price: 249.99,
     category: 'Wearable',
+    outOfStock: true,
 },{
     id: 11,
     image : img11,
     title: 'Óculos Inteligentes com Tela Heads-Up, Mantenha-se conectado com estilo usando estes óculos inteligentes inovadores',
     price: 279.99,
     category: 'Wearable',
+    isNew: true,
 },{
     id: 12,
     image : img12,
     title: 'Caneta Inteligente com Digitalização de Notas, Transforme suas anotações em formato digital com esta caneta inteligente',
     price: 89.99,
     category: 'Wearable',
+    onSale: true,
 }
 ,{
     id: 13,
