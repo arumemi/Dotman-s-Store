@@ -20,15 +20,19 @@ const NavBar = () => {
         <div className='flex justify-between items-center h-16'>
           {/* Logo */}
           <Link to="/" className='/flex-shrink-0'>
-            <h1 className='font-bold text-xl sm:text-2xl text-white hover:text-gray-100 transition-colors duration-200'>Click & Call</h1>
+            <h1 className='font-bold text-xl sm:text-2xl text-black hover:text-gray-100 transition-colors duration-200'>Rolfad Resources International</h1>
           </Link>
 
           {/* Desktop Menu - Hidden on mobile, visible on medium+ screens */}
           <div className='hidden md:flex'>
             <ul className='flex items-center gap-6 lg:gap-8'>
-              <li className='font-bold text-sm lg:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>HOME</li>
-              <li className='font-bold text-sm lg:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>PRODUCT</li>
-              <li className='font-bold text-sm lg:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>CONTACT</li>
+              <Link to='/'>
+                <li className='font-bold text-sm lg:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>HOME</li>
+              </Link>
+              
+              <Link to='/contact'>
+                <li className='font-bold text-sm lg:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>CONTACT</li>
+              </Link>
               {/* Cart link with dynamic item count */}
               <Link to="/cart">
                 <li className='font-bold text-sm lg:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>CART({totalItems})</li>
@@ -58,17 +62,17 @@ const NavBar = () => {
       {isMenuOpen && (
         <div className='md:hidden bg-blue-500'>
           <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>
-            <Link to='/' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200'>
+            <Link to='/' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
               HOME
             </Link>
             <div className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200 cursor-pointer'>
               PRODUCT
             </div>
-            <div className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200 cursor-pointer'>
+            <Link to='/contact' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
               CONTACT
-            </div>
+            </Link>
             {/* Mobile cart link with dynamic item count */}
-            <Link to='/cart' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600  transition-colors duration-200'>
+            <Link to='/cart' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
               CART({totalItems})
             </Link>
           </div>

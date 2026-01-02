@@ -62,10 +62,10 @@ const productList = () => {
               <button 
                 onClick={() => addToCart(product)} 
                 disabled={outOfStock}
-                className={`mt-auto w-full font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ₦{
+                className={`mt-auto w-full font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${
                   outOfStock 
                     ? 'bg-gray-400 cursor-not-allowed text-gray-700' 
-                    : 'bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-black hover:shadow-lg transform hover:scale-105 active:scale-95'
+                    : 'bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-white hover:shadow-lg transform hover:scale-105 active:scale-95'
                 }`}
               >
                 {outOfStock ? 'Unavailable' : 'Add to cart'}

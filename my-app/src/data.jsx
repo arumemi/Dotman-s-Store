@@ -1,3 +1,19 @@
+/**
+ * Product Data File
+ * 
+ * Central data source for all products in the e-commerce store.
+ * Each product includes:
+ * - id: Unique identifier
+ * - image: Product image (imported from assets)
+ * - title: Product name and description
+ * - price: Product price in currency
+ * - category: Product category for filtering
+ * - isNew: (optional) Shows "NEW" badge
+ * - onSale: (optional) Shows "SALE" badge
+ * - outOfStock: (optional) Shows "SOLD OUT" badge and disables purchase
+ */
+
+// Import all product images
 import img1 from './assets/product.img/3d.jpeg';
 import img2 from './assets/product.img/earphone.jpeg';
 import img3 from './assets/product.img/jbl.headphone.webp';
@@ -13,17 +29,19 @@ import img12 from './assets/product.img/smartpen.jpeg';
 import img13 from './assets/product.img/smartpen3.jpeg';
 import img14 from './assets/product.img/virtual3d.jpeg';
 
+// Product array - exported for use throughout the application
 export const productsData = [{ 
     id: 1,
     image : img1,
-    title: 'Óculos de Realidade Virtual ,Experimente realidade virtual imersiva com estes óculos 3D ',
+    title: 'Virtual reality  3d ',
     price: 59.99,
     category: 'Virtual Reality',
     isNew: true,
+    description: 'Experience the future of entertainment with our cutting-edge Virtual Reality 3D Glasses. Featuring integrated audio for a fully immersive experience, these glasses transport you to new worlds with stunning visuals and crystal-clear sound. Perfect for gaming, movies, and virtual tours, they are lightweight and comfortable for extended use. Step into the future today!'
 },{
     id: 2,
     image : img2,
-    title: 'Fones de Ouvido Sem Fio Bluetooth 5.0, Desfrute de som nítido e conexão estável com estes fones de ouvido sem fio',
+    title: 'Wireless Bluetooth 5.0 Earphones, Enjoy clear sound and stable connection with these wireless earphones',
     price: 29.99,
     category: 'Audio',
     onSale: true,
@@ -31,14 +49,14 @@ export const productsData = [{
 {
     id: 3,
     image : img3,
-    title: 'Fones de Ouvido JBL com Cancelamento de Ruído, Mergulhe na música com estes fones de ouvido JBL de alta qualidade',
+    title: 'JBL Noise-Cancelling Headphones, Immerse yourself in music with these high-quality JBL headphones',
     price: 99.99,
     category: 'Audio',
     outOfStock: true,
 },{
     id: 4,
     image : img4,
-    title: 'Relógio Inteligente para Crianças com Rastreamento GPS, Mantenha seus filhos seguros e conectados com este relógio inteligent',
+    title: 'Smartwatch for Kids with GPS Tracking, Keep your children safe and connected with this smart watch',
     price: 49.99,
     category: 'Wearable',
 },{
@@ -51,7 +69,7 @@ export const productsData = [{
 },{
     id: 6,
     image : img6,
-    title: 'OnePlus 11 Smartphone com Desempenho Ultra-Rápido, Aproveite velocidade e eficiência com este smartphone de última geração',
+    title: 'OnePlus 11 Smartphone with Ultra-Fast Performance, Enjoy speed and efficiency with this next-generation smartphone',
     price: 699.99,
     category: 'Smartphone',
 },{
@@ -64,7 +82,7 @@ export const productsData = [{
 },{
     id: 8,
     image : img8,
-    title: 'Google Pixel 9 com Câmera Computacional, Tire fotos impressionantes com este smartphone inovador do Google',
+    title: 'Google Pixel 9 with Computational Photography, Capture stunning photos with this innovative Google smartphone',
     price: 799.99,
     category: 'Smartphone',
     isNew: true,
