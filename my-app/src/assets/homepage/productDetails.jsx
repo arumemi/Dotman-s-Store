@@ -10,6 +10,9 @@ const productDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = React.useState(1);
+  const [offerAmount, setOfferAmount] = React.useState('');
+  const [offerSubmitted, setOfferSubmitted] = React.useState(false);
+  const [offerError, setOfferError] = React.useState('');
 
   const product = productsData.find((item) => item.id === parseInt(id));
 
@@ -43,6 +46,38 @@ const productDetails = () => {
     }
   };
 
+  const handleOfferSubmit = (e) => {
+    e.preventDefault();
+    const offer = parseFloat(offerAmount);
+    
+    // Validate offer
+    if (!offerAmount || isNaN(offer)) {
+      setOfferError('Please enter a valid amount');
+      return;
+    }
+    
+    if (offer <= 0) {
+      setOfferError('Offer must be greater than 0');
+      return;
+    }
+    
+    if (offer >= product.price) {
+      setOfferError(`Your offer must be less than the asking price of ₦${product.price.toFixed(2)}`);
+      return;
+    }
+    
+    // In a real app, this would send the offer to a backend
+    // For now, we'll just show a success message
+    setOfferError('');
+    setOfferSubmitted(true);
+    
+    // Reset after 5 seconds
+    setTimeout(() => {
+      setOfferSubmitted(false);
+      setOfferAmount('');
+    }, 5000);
+  };
+
   return (
     <div className='min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8'>
       <div className='max-w-7xl mx-auto'>
@@ -72,9 +107,15 @@ const productDetails = () => {
                     NEW
                   </span>
                 )}
+                {product.negotiable && (
+                  <span className='block bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>
+                    Negotiable
+                  </span>
+                )}
                 {product.outOfStock && (
                   <span className='block bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>
                     SOLD OUT
+
                   </span>
                 )}
               </div>
@@ -106,14 +147,74 @@ const productDetails = () => {
               {/* Price */}
               <div className='mb-6'>
                 <p className='text-4xl font-bold text-red-600'>
-                  R$ {product.price.toFixed(2)}
+                  ₦ {product.price.toFixed(2)}
                 </p>
                 {product.onSale && (
                   <p className='text-sm text-green-600 font-medium mt-1'>
                     Promotional price!
                   </p>
                 )}
+                {product.negotiable && (
+                  <p className='text-sm text-blue-600 font-medium mt-1 flex items-center'>
+                    <svg className='h-4 w-4 mr-1' fill='currentColor' viewBox='0 0 20 20'>
+                      <path d='M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z' />
+                      <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z' clipRule='evenodd' />
+                    </svg>
+                    Price is negotiable - Make an offer below!
+                  </p>
+                )}
               </div>
+
+              {/* Negotiable Offer Section */}
+              {product.negotiable && !product.outOfStock && (
+                <div className='mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200'>
+                  <h3 className='text-lg font-semibold text-gray-800 mb-3'>Make an Offer</h3>
+                  {!offerSubmitted ? (
+                    <form onSubmit={handleOfferSubmit}>
+                      <div className='flex flex-col sm:flex-row gap-3'>
+                        <div className='flex-1'>
+                          <label htmlFor='offerAmount' className='sr-only'>Your offer amount</label>
+                          <div className='relative'>
+                            <span className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 font-semibold'>
+                              ₦
+                            </span>
+                            <input
+                              id='offerAmount'
+                              type='number'
+                              step='0.01'
+                              min='0'
+                              value={offerAmount}
+                              onChange={(e) => {
+                                setOfferAmount(e.target.value);
+                                setOfferError('');
+                              }}
+                              placeholder='Enter your offer'
+                              className='w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type='submit'
+                          className='bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105 active:scale-95'
+                        >
+                          Submit Offer
+                        </button>
+                      </div>
+                      {offerError && (
+                        <p className='text-red-600 text-sm mt-2'>{offerError}</p>
+                      )}
+                      <p className='text-xs text-gray-600 mt-2'>
+                        Tip: Your offer should be less than the asking price. The seller will review and respond.
+                      </p>
+                    </form>
+                  ) : (
+                    <div className='bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg'>
+                      <p className='font-semibold'>Offer Submitted Successfully! 🎉</p>
+                      <p className='text-sm mt-1'>Your offer of ₦{parseFloat(offerAmount).toFixed(2)} has been sent to the seller. They will contact you soon!</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Divider */}
               <div className='border-t border-gray-200 my-6'></div>
@@ -122,7 +223,7 @@ const productDetails = () => {
               <div className='mb-6'>
                 <h3 className='text-lg font-semibold text-gray-800 mb-2'>Description</h3>
                 <p className='text-gray-600 leading-relaxed'>
-                  {product.title}
+                  {product.description}
                 </p>
               </div>
 

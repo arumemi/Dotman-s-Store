@@ -22,7 +22,7 @@ const productList = () => {
         // Map through products array and render a card for each product
         products.map((product) => {
           // Destructure product properties for easier access
-          const {id, title, price, image, isNew, onSale, outOfStock} = product;
+          const {id, title, price, image, isNew, onSale, outOfStock, negotiable} = product;
           return (
             // Product card with hover effects
             <div key={id} className='bg-white border border-gray-400 rounded-xl p-5 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative'>
@@ -39,9 +39,14 @@ const productList = () => {
                   <span className='bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>SALE</span>
                 </div>
               )}
-              {isNew && !outOfStock && (
+              {isNew && !outOfStock && !onSale && (
                 <div className='absolute top-2 right-2 z-10'>
                   <span className='bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>NEW</span>
+                </div>
+              )}
+              {negotiable && !outOfStock && !onSale && !isNew && (
+                <div className='absolute top-2 right-2 z-10'>
+                  <span className='bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>NEGOTIABLE</span>
                 </div>
               )}
               
