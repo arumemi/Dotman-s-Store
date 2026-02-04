@@ -14,20 +14,20 @@
  */
 
 // Import all product images
-import img1 from './assets/product.img/3d.jpeg';
-import img2 from './assets/product.img/earphone.jpeg';
-import img3 from './assets/product.img/jbl.headphone.webp';
-import img4 from './assets/product.img/kids.jpeg';
-import img5 from './assets/product.img/notthing-phone.webp';
-import img6 from './assets/product.img/onpeplus.webp';
-import img7 from './assets/product.img/phonemax.webp';
-import img8 from './assets/product.img/pixel-9.webp';
-import img9 from './assets/product.img/Samsung-s7.webp';
-import img10 from './assets/product.img/smart-glass.jpeg';
-import img11 from './assets/product.img/smartglass2.jpeg';
-import img12 from './assets/product.img/smartpen.jpeg';
-import img13 from './assets/product.img/smartpen3.jpeg';
-import img14 from './assets/product.img/virtual3d.jpeg';
+import img1 from './assets/product.img/virtual3d.jpeg';
+import img2 from './assets/product.img/Samsung-s7.webp';
+import img3 from './assets/product.img/dot.img/iphone12-pro-max-back.jpeg';
+import img4 from './assets/product.img/dot.img/iphone12-pro-max-front.jpeg';
+import img5 from './assets/product.img/iphone-xs-64gb-back.jpeg';
+import img6 from './assets/product.img/iphone-xs-64gb-front.jpeg';
+import img7 from './assets/product.img/dot.img/samsung-galaxy-a26-back.jpeg';
+import img8 from './assets/product.img/dot.img/samsung-galaxy-a26-front.jpeg';
+import img9 from './assets/product.img/dot.img/samsung-galaxy-s23ultra-back.jpeg';
+import img10 from './assets/product.img/dot.img/samsung-galaxy-s23ultra-front-back-cream.jpeg';
+import img11 from './assets/product.img/dot.img/samsung-galaxy-s23ultra-front.jpeg';
+import img12 from './assets/product.img/dot.img/samsung-s22ultra-back.jpeg';
+import img13 from './assets/product.img/dot.img/samsung-s22ultra.jpeg';
+import img14 from './assets/product.img/dot.img/samsung-s23ultra.jpeg';
 
 // Product array - exported for use throughout the application
 export const productsData = [{

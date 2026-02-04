@@ -11,7 +11,8 @@
  */
 
 import React from 'react'
-import bannerImg from '../product.img/kids.jpeg'
+// import bannerImg from '../product.img/kids.jpeg' // File not found - commented out
+import bannerImg from '../product.img/Samsung-s7.webp' // Temporary placeholder
 
 const banner = () => {
   return (
