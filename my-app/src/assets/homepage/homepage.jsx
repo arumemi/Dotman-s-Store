@@ -12,7 +12,8 @@
 import React from 'react'
 import Hero from '../components/hero'
 import ProductList from '../components/productList'
-import Banner from '../components/banner.jsx'
+import Banner from '../components/banner'
+
 
 const homepage = () => {
   return (
