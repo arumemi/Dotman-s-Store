@@ -1,16 +1,35 @@
-# React + Vite
+# Product Card E-commerce (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação React com Vite e React Router para catálogo e carrinho.
 
-Currently, two official plugins are available:
+## Scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `npm run dev`: inicia ambiente de desenvolvimento
+- `npm run build`: gera build de produção em `dist/`
+- `npm run preview`: pré-visualiza build de produção localmente
 
-## React Compiler
+## Deploy na Hostinger (hPanel / Apache)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Este projeto já está preparado para hospedagem estática com SPA:
 
-## Expanding the ESLint configuration
+- `public/.htaccess` garante fallback de rotas para `index.html`
+- `vite.config.js` usa `base: './'` para assets funcionarem em raiz **ou subpasta**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Passo a passo
+
+1. Execute o build:
+	- `npm run build`
+2. Faça upload do conteúdo de `dist/` para `public_html/` (ou subpasta desejada).
+3. Verifique se os seguintes arquivos estão presentes no destino:
+	- `index.html`
+	- `.htaccess`
+	- pasta `assets/`
+
+### Pacote pronto para upload
+
+Se preferir upload único, use `hostinger-deploy.zip` (gerado a partir do `dist/`).
+
+## Observações
+
+- Se o domínio usar cache agressivo/CDN, limpe o cache após upload.
+- Em SPA, erros 404 ao recarregar rotas geralmente indicam ausência ou problema no `.htaccess`.
