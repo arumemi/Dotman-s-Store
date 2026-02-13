@@ -23,7 +23,7 @@ const CartDetails = ({item}) => {
             className='flex items-center text-red-500 hover:text-red-700 mt-2 text-sm font-medium transition-colors duration-200'
           >
             <FiTrash2 className='mr-1' size={16} />
-            Remove
+            remove
           </button>
         </div>
       </div>
@@ -33,7 +33,7 @@ const CartDetails = ({item}) => {
         <button 
           onClick={() => decreaseItemQuantity(id)}
           className='w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex justify-center items-center transition-colors duration-200 active:scale-95'
-          aria-label="Decrease quantity"
+          aria-label="decrease quantity"
         >
           <IoMdRemove size={18} className='text-gray-700' />
         </button>
@@ -41,7 +41,7 @@ const CartDetails = ({item}) => {
         <button 
           onClick={() => increaseQuantity(id)}
           className='w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex justify-center items-center transition-colors duration-200 active:scale-95'
-          aria-label="Increase quantity"
+          aria-label="increase quantity"
         >
           <IoMdAdd size={18} className='text-white' />
         </button>
@@ -49,7 +49,7 @@ const CartDetails = ({item}) => {
 
       {/* Total Price */}
       <div className='text-right /md:min-w-[100px]'>
-        <p className='text-sm text-gray-500 mb-1'>Total</p>
+        <p className='text-sm text-gray-500 mb-1'>total</p>
         <p className='text-xl font-bold text-gray-800'> ₦ {(price * quantity).toFixed(2)}</p>
       </div>
     </div>

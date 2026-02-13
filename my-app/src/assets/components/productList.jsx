@@ -14,7 +14,7 @@ const productList = () => {
   return (
     <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12' >
       {/* Section heading */}
-      <h2 className='text-3xl md:text-4xl font-bold mb-12 text-gray-800 text-center'>Our Stylish Collection</h2>
+      <h2 className='text-3xl md:text-4xl font-bold mb-12 text-gray-800 text-center'>our stylish collection</h2>
       
       {/* Responsive grid: 1 col on mobile, 2 on sm, 3 on md, 4 on lg+ */}
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12'>
@@ -29,24 +29,24 @@ const productList = () => {
               {/* Out of stock badge - positioned over image */}
               {outOfStock && (
                 <div className='absolute top-32 left-1/2 transform -translate-x-1/2 z-20'>
-                  <span className='bg-gray-800 text-white text-lg font-bold px-6 py-3 rounded-lg shadow-2xl'>SOLD</span>
+                  <span className='bg-gray-800 text-white text-lg font-bold px-6 py-3 rounded-lg shadow-2xl'>sold</span>
                 </div>
               )}
               
               {/* Badge for New or Sale products */}
               {onSale && !outOfStock && (
                 <div className='absolute top-2 right-2 z-10'>
-                  <span className='bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>SALE</span>
+                  <span className='bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>sale</span>
                 </div>
               )}
               {isNew && !outOfStock && !onSale && (
                 <div className='absolute top-2 right-2 z-10'>
-                  <span className='bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>NEW</span>
+                  <span className='bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>new</span>
                 </div>
               )}
               {negotiable && !outOfStock && !onSale && !isNew && (
                 <div className='absolute top-2 right-2 z-10'>
-                  <span className='bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>NEGOTIABLE</span>
+                  <span className='bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg'>negotiable</span>
                 </div>
               )}
               
@@ -73,7 +73,7 @@ const productList = () => {
                     : 'bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-white hover:shadow-lg transform hover:scale-105 active:scale-95'
                 }`}
               >
-                {outOfStock ? 'Unavailable' : 'Add to cart'}
+                {outOfStock ? 'unavailable' : 'add to cart'}
               </button>
             </div>
           )

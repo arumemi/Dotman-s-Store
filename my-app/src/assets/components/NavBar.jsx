@@ -38,15 +38,15 @@ const NavBar = () => {
           <div className='hidden lg:flex'>
             <ul className='flex items-center gap-5 xl:gap-8'>
               <Link to='/'>
-                <li className='font-bold text-sm xl:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>HOME</li>
+                <li className='font-bold text-sm xl:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>home</li>
               </Link>
               
               <Link to='/contact'>
-                <li className='font-bold text-sm xl:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>CONTACT</li>
+                <li className='font-bold text-sm xl:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>contact</li>
               </Link>
               {!isAdminAuthenticated ? (
                 <Link to='/admin'>
-                  <li className='font-bold text-sm xl:text-lg text-red-600 hover:text-gray-100 cursor-pointer transition-colors duration-200'>LOGIN</li>
+                  <li className='font-bold text-sm xl:text-lg text-red-600 hover:text-gray-100 cursor-pointer transition-colors duration-200'>login</li>
                 </Link>
               ) : (
                 <li>
@@ -54,13 +54,13 @@ const NavBar = () => {
                     onClick={handleLogout}
                     className='font-bold text-sm xl:text-lg text-red-600 hover:text-gray-100 cursor-pointer transition-colors duration-200'
                   >
-                    LOGOUT
+                    logout
                   </button>
                 </li>
               )}
               {/* Cart link with dynamic item count */}
               <Link to="/cart">
-                <li className='font-bold text-sm xl:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>CART({totalItems})</li>
+                <li className='font-bold text-sm xl:text-lg text-white hover:text-gray-100 cursor-pointer transition-colors duration-200'>cart({totalItems})</li>
               </Link>
             </ul>
           </div>
@@ -88,26 +88,26 @@ const NavBar = () => {
         <div className='lg:hidden bg-blue-500'>
           <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>
             <Link to='/' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
-              HOME
+              home
             </Link>
             <Link to='/contact' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
-              CONTACT
+              contact
             </Link>
             {!isAdminAuthenticated ? (
               <Link to='/admin' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
-                LOGIN
+                login
               </Link>
             ) : (
               <button
                 onClick={handleLogout}
                 className='block w-full text-left px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200'
               >
-                LOGOUT
+                logout
               </button>
             )}
             {/* Mobile cart link with dynamic item count */}
             <Link to='/cart' className='block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-blue-600 transition-colors duration-200' onClick={() => setIsMenuOpen(false)}>
-              CART({totalItems})
+              cart({totalItems})
             </Link>
           </div>
         </div>
