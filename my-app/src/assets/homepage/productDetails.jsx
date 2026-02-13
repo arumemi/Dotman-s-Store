@@ -1,12 +1,11 @@
 import React from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { productsData } from '../../data'
 import { ShopContext } from '../components/shopContex.jsx'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { FiArrowLeft, FiShoppingCart } from 'react-icons/fi'
 
 const productDetails = () => {
-  const {addToCart} = React.useContext(ShopContext);
+  const { addToCart, products } = React.useContext(ShopContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = React.useState(1);
@@ -14,7 +13,7 @@ const productDetails = () => {
   const [offerSubmitted, setOfferSubmitted] = React.useState(false);
   const [offerError, setOfferError] = React.useState('');
 
-  const product = productsData.find((item) => item.id === parseInt(id));
+  const product = products.find((item) => item.id === parseInt(id));
 
   // If product not found, show error
   if (!product) {
@@ -331,7 +330,7 @@ const productDetails = () => {
         <div className='mt-12'>
           <h2 className='text-2xl font-bold text-gray-800 mb-6'>Related Products</h2>
           <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
-            {productsData
+            {products
               .filter(p => p.category === product.category && p.id !== product.id)
               .slice(0, 4)
               .map(relatedProduct => (

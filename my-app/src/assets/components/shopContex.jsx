@@ -1,10 +1,16 @@
 import { createContext, useState, useEffect } from "react";
 import { productsData } from '../../data.jsx';
 
+const ADMIN_PASSWORD = '1914';
+const ADMIN_SESSION_KEY = 'isAdminAuthenticated';
+
 export const ShopContext = createContext();
 
 export const ShopContextProvider = ({children}) => {
-    const [products, setProducts] = useState(productsData);
+    const [products, setProducts] = useState(() => {
+        const savedProducts = localStorage.getItem('products');
+        return savedProducts ? JSON.parse(savedProducts) : productsData;
+    });
     // Load cart from localStorage on initial render
     const [cartItems, setCartItems] = useState(() => {
         const savedCart = localStorage.getItem('cartItems');
@@ -12,12 +18,18 @@ export const ShopContextProvider = ({children}) => {
     });
     const [orderDetails, setOrderDetails] = useState(0);
     const [totalItems, setTotalItems] = useState(0);
+    const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true');
     
     // Save cart to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
         console.log('Cart updated:', cartItems);
     }, [cartItems]);
+
+    // Save products to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('products', JSON.stringify(products));
+    }, [products]);
     
     //calculate total price
     useEffect(() => {
@@ -92,6 +104,88 @@ export const ShopContextProvider = ({children}) => {
         setCartItems([]);
     };
 
+    // Admin authentication helpers
+    const loginAdmin = (password) => {
+        if (password !== ADMIN_PASSWORD) return false;
+
+        setIsAdminAuthenticated(true);
+        sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+        return true;
+    };
+
+    const logoutAdmin = () => {
+        setIsAdminAuthenticated(false);
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    };
+
+    // Add product from admin panel
+    const addProduct = (newProduct) => {
+        setProducts((prevProducts) => {
+            const maxId = prevProducts.length > 0 ? Math.max(...prevProducts.map((item) => item.id)) : 0;
+
+            const productToInsert = {
+                id: maxId + 1,
+                title: newProduct.title,
+                price: Number(newProduct.price),
+                category: newProduct.category,
+                description: newProduct.description || 'Product added by admin.',
+                image: newProduct.image || 'https://via.placeholder.com/500x500?text=Product+Image',
+                isNew: Boolean(newProduct.isNew),
+                onSale: Boolean(newProduct.onSale),
+                outOfStock: Boolean(newProduct.outOfStock),
+                negotiable: Boolean(newProduct.negotiable),
+            };
+
+            return [productToInsert, ...prevProducts];
+        });
+    };
+
+    // Update existing product from admin panel
+    const updateProduct = (updatedProduct) => {
+        const normalizedProduct = {
+            id: updatedProduct.id,
+            title: updatedProduct.title,
+            price: Number(updatedProduct.price),
+            category: updatedProduct.category,
+            description: updatedProduct.description || 'Product updated by admin.',
+            image: updatedProduct.image || 'https://via.placeholder.com/500x500?text=Product+Image',
+            isNew: Boolean(updatedProduct.isNew),
+            onSale: Boolean(updatedProduct.onSale),
+            outOfStock: Boolean(updatedProduct.outOfStock),
+            negotiable: Boolean(updatedProduct.negotiable),
+        };
+
+        setProducts((prevProducts) =>
+            prevProducts.map((product) =>
+                product.id === normalizedProduct.id ? { ...product, ...normalizedProduct } : product
+            )
+        );
+
+        setCartItems((prevCartItems) =>
+            prevCartItems.map((item) =>
+                item.id === normalizedProduct.id
+                    ? {
+                        ...item,
+                        title: normalizedProduct.title,
+                        price: normalizedProduct.price,
+                        category: normalizedProduct.category,
+                        image: normalizedProduct.image,
+                        outOfStock: normalizedProduct.outOfStock,
+                        onSale: normalizedProduct.onSale,
+                        isNew: normalizedProduct.isNew,
+                        negotiable: normalizedProduct.negotiable,
+                    }
+                    : item
+            )
+        );
+    };
+
+    // Remove product from catalog and cart
+    const removeProduct = (id) => {
+        setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+        setCartItems((prevCartItems) => prevCartItems.filter((item) => item.id !== id));
+    };
+
     return (
         <ShopContext.Provider value={{
             products, 
@@ -102,7 +196,13 @@ export const ShopContextProvider = ({children}) => {
             removeFromCart, 
             decreaseItemQuantity, 
             clearCart,
-            increaseQuantity
+            increaseQuantity,
+            addProduct,
+            updateProduct,
+            removeProduct,
+            isAdminAuthenticated,
+            loginAdmin,
+            logoutAdmin
 
         }}>
             {children}

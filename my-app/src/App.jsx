@@ -14,8 +14,6 @@
  * - /contact : Contact form page
  */
 
-import { useState } from 'react'
-
 // Layout Components
 import Navbar from './assets/components/NavBar'
 import Footer from './assets/components/footer'
@@ -29,6 +27,7 @@ import Homepage from './assets/homepage/homepage'
 import Cart from './assets/cart/cart'
 import ProductDetails from './assets/homepage/productDetails'
 import Contact from './assets/components/contact'
+import Admin from './assets/admin/admin'
 
 function App() {
  return (
@@ -50,6 +49,9 @@ function App() {
           
           {/* Contact form: Send messages to business email */}
           <Route path='/contact' element={<Contact/>}/>
+
+          {/* Admin panel: Manage product catalog */}
+          <Route path='/admin' element={<Admin/>}/>
         </Routes>
         
         {/* Footer - company info, links, social media */}
