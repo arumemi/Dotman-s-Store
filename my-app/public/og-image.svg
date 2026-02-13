@@ -1,0 +1,42 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="140" y1="70" x2="1060" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ef4444"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="blur" x="0" y="0" width="1200" height="630" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <g opacity="0.35" filter="url(#blur)">
+    <circle cx="220" cy="120" r="160" fill="#ef4444"/>
+    <circle cx="980" cy="520" r="190" fill="#f97316"/>
+  </g>
+
+  <rect x="90" y="70" width="1020" height="490" rx="28" fill="url(#accent)" opacity="0.14"/>
+  <rect x="90" y="70" width="1020" height="490" rx="28" stroke="#ffffff" stroke-opacity="0.25"/>
+
+  <text x="140" y="230" fill="#ffffff" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="78" font-weight="800">
+    Dotman's Store
+  </text>
+
+  <text x="140" y="304" fill="#fca5a5" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="36" font-weight="600">
+    Premium Tech · Smarter Prices
+  </text>
+
+  <text x="140" y="390" fill="#e5e7eb" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="30" font-weight="500">
+    Smartphones • Accessories • Great Deals
+  </text>
+
+  <rect x="140" y="440" width="280" height="74" rx="14" fill="#ef4444"/>
+  <text x="180" y="488" fill="#ffffff" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="30" font-weight="700">
+    Shop Now
+  </text>
+</svg>
