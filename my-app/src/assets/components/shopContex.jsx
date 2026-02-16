@@ -170,9 +170,7 @@ export const ShopContextProvider = ({children}) => {
                 const payload = await response.json();
                 const sharedProducts = normalizeProductCollection(payload);
 
-                if (sharedProducts.length > 0) {
-                    setProducts(sharedProducts);
-                }
+                setProducts(sharedProducts);
 
                 setSyncStatus({ state: 'synced', label: getSyncedLabel(target.source) });
             } catch (error) {
@@ -202,7 +200,7 @@ export const ShopContextProvider = ({children}) => {
         const syncProducts = async () => {
             try {
                 setSyncStatus({ state: 'syncing', label: getSyncingLabel(target.source) });
-                await fetch(productsUrl, {
+                const response = await fetch(productsUrl, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -210,6 +208,11 @@ export const ShopContextProvider = ({children}) => {
                     body: JSON.stringify(products),
                     signal: controller.signal,
                 });
+
+                if (!response.ok) {
+                    throw new Error('Remote products sync failed');
+                }
+
                 setSyncStatus({ state: 'synced', label: getSyncedLabel(target.source) });
             } catch (error) {
                 if (error?.name !== 'AbortError') {

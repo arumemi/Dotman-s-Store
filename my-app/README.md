@@ -75,6 +75,18 @@ Projeto preparado para deploy com Vercel usando `vercel.json`:
 4. Output directory: `dist` (já definido).
 5. Deploy.
 
+### Variáveis da Vercel (obrigatórias para sync global)
+
+No painel da Vercel (Project → Settings → Environment Variables), adicione:
+
+- `VITE_PRODUCTS_SYNC_MODE=mongodb`
+- `MONGODB_URI` **ou** (`MONGODB_USERNAME`, `MONGODB_PASSWORD`, `MONGODB_CLUSTER_HOST`)
+- `MONGODB_DB_NAME`
+- `MONGODB_COLLECTION`
+
+> Em produção, o frontend usa `/api/products` no mesmo domínio (Serverless Functions em `api/`).
+> Se a API estiver indisponível, o app entra em fallback local e os uploads ficam visíveis apenas no dispositivo.
+
 ### Observação importante
 
 Para Vercel com `BrowserRouter`, os assets devem ser gerados com base raiz (`/`) para funcionar em rotas profundas como `/product/123`.
