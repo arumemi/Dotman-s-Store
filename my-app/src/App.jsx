@@ -76,7 +76,7 @@ function App() {
                 className='text-gray-300 hover:text-white text-sm font-semibold transition-colors duration-200'
                 aria-label='Close notification'
               >
-                ✕
+                close
               </button>
             </div>
           </div>
