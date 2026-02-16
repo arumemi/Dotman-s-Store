@@ -4,6 +4,9 @@ import { productsData } from '../../data.jsx';
 const ADMIN_PASSWORD = '1914';
 const ADMIN_SESSION_KEY = 'isAdminAuthenticated';
 const PRODUCT_FALLBACK_IMAGE = 'https://via.placeholder.com/500x500?text=Product+Image';
+const FIREBASE_DATABASE_URL = (import.meta.env.VITE_FIREBASE_DATABASE_URL || '').trim();
+const PRODUCTS_SYNC_MODE = (import.meta.env.VITE_PRODUCTS_SYNC_MODE || 'firebase').trim().toLowerCase();
+const PRODUCTS_API_BASE_URL = (import.meta.env.VITE_PRODUCTS_API_BASE_URL || '').trim();
 
 const normalizeProductImages = (productLike) => {
     const fromArray = Array.isArray(productLike?.images)
@@ -31,9 +34,72 @@ const normalizeProductRecord = (productLike) => {
     };
 };
 
+const normalizeProductCollection = (rawValue) => {
+    if (Array.isArray(rawValue)) {
+        return rawValue.map(normalizeProductRecord);
+    }
+
+    if (rawValue && typeof rawValue === 'object') {
+        return Object.values(rawValue).map(normalizeProductRecord);
+    }
+
+    return [];
+};
+
+const getFirebaseProductsSyncUrl = () => {
+    if (!FIREBASE_DATABASE_URL) return '';
+    return `${FIREBASE_DATABASE_URL.replace(/\/$/, '')}/products.json`;
+};
+
+const getMongoProductsSyncUrl = () => {
+    if (!PRODUCTS_API_BASE_URL) return '/api/products';
+    return `${PRODUCTS_API_BASE_URL.replace(/\/$/, '')}/api/products`;
+};
+
+const getProductsSyncTarget = () => {
+    if (PRODUCTS_SYNC_MODE === 'mongodb') {
+        return {
+            url: getMongoProductsSyncUrl(),
+            source: 'mongodb',
+        };
+    }
+
+    if (PRODUCTS_SYNC_MODE === 'firebase') {
+        return {
+            url: getFirebaseProductsSyncUrl(),
+            source: 'firebase',
+        };
+    }
+
+    return {
+        url: '',
+        source: 'local',
+    };
+};
+
+const getSyncingLabel = (source) => {
+    if (source === 'mongodb') return 'Syncing (MongoDB)...';
+    if (source === 'firebase') return 'Syncing (Firebase)...';
+    return 'Offline fallback';
+};
+
+const getSyncedLabel = (source) => {
+    if (source === 'mongodb') return 'Synced (MongoDB)';
+    if (source === 'firebase') return 'Synced (Firebase)';
+    return 'Offline fallback';
+};
+
 export const ShopContext = createContext();
 
 export const ShopContextProvider = ({children}) => {
+    const syncTarget = getProductsSyncTarget();
+    const [isRemoteProductsHydrated, setIsRemoteProductsHydrated] = useState(false);
+    const [syncStatus, setSyncStatus] = useState(() => ({
+        state: syncTarget.url ? 'syncing' : 'offline',
+        label: syncTarget.url ? getSyncingLabel(syncTarget.source) : 'Offline fallback',
+    }));
+    const [toast, setToast] = useState(null);
+
     const [products, setProducts] = useState(() => {
         const savedProducts = localStorage.getItem('products');
         const sourceProducts = savedProducts ? JSON.parse(savedProducts) : productsData;
@@ -47,6 +113,24 @@ export const ShopContextProvider = ({children}) => {
     const [orderDetails, setOrderDetails] = useState(0);
     const [totalItems, setTotalItems] = useState(0);
     const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true');
+
+    const showToast = (message) => {
+        setToast({ id: Date.now(), message });
+    };
+
+    const dismissToast = () => {
+        setToast(null);
+    };
+
+    useEffect(() => {
+        if (!toast) return undefined;
+
+        const timeoutId = setTimeout(() => {
+            setToast(null);
+        }, 2600);
+
+        return () => clearTimeout(timeoutId);
+    }, [toast]);
     
     // Save cart to localStorage whenever it changes
     useEffect(() => {
@@ -58,6 +142,87 @@ export const ShopContextProvider = ({children}) => {
     useEffect(() => {
         localStorage.setItem('products', JSON.stringify(products));
     }, [products]);
+
+    // Hydrate products from shared database if configured
+    useEffect(() => {
+        const target = getProductsSyncTarget();
+        const productsUrl = target.url;
+
+        if (!productsUrl) {
+            setSyncStatus({ state: 'offline', label: target.source === 'local' ? 'Local only' : 'Offline fallback' });
+            setIsRemoteProductsHydrated(true);
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const hydrateProducts = async () => {
+            try {
+                const response = await fetch(productsUrl, {
+                    method: 'GET',
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Could not load shared products');
+                }
+
+                const payload = await response.json();
+                const sharedProducts = normalizeProductCollection(payload);
+
+                if (sharedProducts.length > 0) {
+                    setProducts(sharedProducts);
+                }
+
+                setSyncStatus({ state: 'synced', label: getSyncedLabel(target.source) });
+            } catch (error) {
+                if (error?.name !== 'AbortError') {
+                    console.warn('Shared product sync unavailable. Using local catalog fallback.');
+                    setSyncStatus({ state: 'offline', label: 'Offline fallback' });
+                }
+            } finally {
+                setIsRemoteProductsHydrated(true);
+            }
+        };
+
+        hydrateProducts();
+
+        return () => controller.abort();
+    }, []);
+
+    // Sync products to shared database after hydration
+    useEffect(() => {
+        const target = getProductsSyncTarget();
+        const productsUrl = target.url;
+
+        if (!productsUrl || !isRemoteProductsHydrated) return;
+
+        const controller = new AbortController();
+
+        const syncProducts = async () => {
+            try {
+                setSyncStatus({ state: 'syncing', label: getSyncingLabel(target.source) });
+                await fetch(productsUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(products),
+                    signal: controller.signal,
+                });
+                setSyncStatus({ state: 'synced', label: getSyncedLabel(target.source) });
+            } catch (error) {
+                if (error?.name !== 'AbortError') {
+                    console.warn('Unable to sync products to shared database.');
+                    setSyncStatus({ state: 'offline', label: 'Offline fallback' });
+                }
+            }
+        };
+
+        syncProducts();
+
+        return () => controller.abort();
+    }, [products, isRemoteProductsHydrated]);
     
     //calculate total price
     useEffect(() => {
@@ -82,19 +247,25 @@ export const ShopContextProvider = ({children}) => {
     
 
     //function to add item to cart
-    const addToCart = (product) => {
+    const addToCart = (product, quantityToAdd = 1) => {
+        const safeQuantity = Number.isFinite(quantityToAdd) && quantityToAdd > 0
+            ? Math.floor(quantityToAdd)
+            : 1;
+
         const existingItem = cartItems.find((item) => item.id === product.id);
         
         if (!existingItem) {
-            setCartItems([...cartItems, {...product, quantity: 1}]);
+            setCartItems([...cartItems, {...product, quantity: safeQuantity}]);
+            showToast(`Added ${safeQuantity} × ${product.title} to cart.`);
         } else {
             const updatedCart = cartItems.map((item) => {
                 if (item.id === product.id) {
-                    return {...item, quantity: item.quantity + 1};
+                    return {...item, quantity: item.quantity + safeQuantity};
                 }
                 return item;
             });
             setCartItems(updatedCart);
+            showToast(`Updated ${product.title} quantity in cart.`);
         }
     };
 
@@ -235,7 +406,10 @@ export const ShopContextProvider = ({children}) => {
             removeProduct,
             isAdminAuthenticated,
             loginAdmin,
-            logoutAdmin
+            logoutAdmin,
+            syncStatus,
+            toast,
+            dismissToast
 
         }}>
             {children}

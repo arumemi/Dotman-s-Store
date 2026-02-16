@@ -1,3 +1,4 @@
+import React from 'react'
 /**
  * App Component - Main Application Container
  * 
@@ -28,8 +29,11 @@ import Cart from './assets/cart/cart'
 import ProductDetails from './assets/homepage/productDetails'
 import Contact from './assets/components/contact'
 import Admin from './assets/admin/admin'
+import { ShopContext } from './assets/components/shopContex'
 
 function App() {
+ const { toast, dismissToast } = React.useContext(ShopContext)
+
  return (
     <>
       <div>
@@ -59,6 +63,24 @@ function App() {
         
         {/* Floating WhatsApp button - fixed bottom-right on all pages */}
         <FloatingWhatsApp/>
+
+        {/* Global toast */}
+        {toast && (
+          <div className='fixed top-20 right-4 left-4 sm:left-auto sm:max-w-sm z-70'>
+            <div className='bg-gray-900 text-white border border-gray-700 rounded-xl shadow-2xl px-4 py-3 flex items-start gap-3 transition-all duration-200'>
+              <span className='mt-1 h-2.5 w-2.5 rounded-full bg-green-400 shrink-0' />
+              <p className='text-sm leading-5 flex-1'>{toast.message}</p>
+              <button
+                type='button'
+                onClick={dismissToast}
+                className='text-gray-300 hover:text-white text-sm font-semibold transition-colors duration-200'
+                aria-label='Close notification'
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   )

@@ -48,9 +48,7 @@ const productDetails = () => {
   }
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
+    addToCart(product, quantity);
   };
 
   const increaseQuantity = () => {

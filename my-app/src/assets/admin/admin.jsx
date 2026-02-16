@@ -90,7 +90,7 @@ const initialFormState = {
 };
 
 const admin = () => {
-  const { products, addProduct, updateProduct, removeProduct, isAdminAuthenticated, loginAdmin, logoutAdmin } = React.useContext(ShopContext);
+  const { products, addProduct, updateProduct, removeProduct, isAdminAuthenticated, loginAdmin, logoutAdmin, syncStatus } = React.useContext(ShopContext);
   const cloudinaryReady = React.useMemo(() => isCloudinaryConfigured(), []);
   const [formData, setFormData] = React.useState(initialFormState);
   const [editingProductId, setEditingProductId] = React.useState(null);
@@ -452,6 +452,18 @@ const admin = () => {
           <div>
             <h1 className='text-3xl md:text-4xl font-bold text-gray-800'>Admin Panel</h1>
             <p className='text-gray-600 mt-2'>Add or remove products from your store catalog.</p>
+            <div className='mt-3 inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1'>
+              <span className={`h-2.5 w-2.5 rounded-full ${
+                syncStatus?.state === 'synced'
+                  ? 'bg-green-500'
+                  : syncStatus?.state === 'syncing'
+                    ? 'bg-yellow-500 animate-pulse'
+                    : 'bg-gray-400'
+              }`} />
+              <span className='text-xs sm:text-sm font-medium text-gray-700'>
+                {syncStatus?.label || 'Offline fallback'}
+              </span>
+            </div>
           </div>
           <button
             onClick={handleLogout}

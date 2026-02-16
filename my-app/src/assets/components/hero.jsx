@@ -75,9 +75,7 @@ const Hero = () => {
         <p className='text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 sm:mb-8 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl drop-shadow-lg px-4'>
           discover innovation that transforms your daily life.
         </p>
-        <button className='bg-white hover:bg-blue-700 active:bg-blue-800 text-black hover:text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-wider text-sm sm:text-base'>
-          shop collection
-        </button>
+        
       </div>
 
       {/* Navigation Arrows */}

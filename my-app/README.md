@@ -2,6 +2,28 @@
 
 Aplicação React com Vite e React Router para catálogo e carrinho.
 
+## MongoDB (catálogo compartilhado)
+
+O projeto agora suporta sincronização de produtos com MongoDB via API Node local (`server/index.js`).
+
+### Variáveis importantes
+
+No `.env`:
+
+- `VITE_PRODUCTS_SYNC_MODE=mongodb`
+- `MONGODB_URI=mongodb://127.0.0.1:27017`
+- `MONGODB_DB_NAME=click_call_db`
+- `MONGODB_COLLECTION=products`
+- `API_PORT=4000`
+
+### Como rodar em desenvolvimento
+
+1. Inicie o MongoDB local (ou use Atlas com sua connection string em `MONGODB_URI`).
+2. Em um terminal, rode a API: `npm run server`
+3. Em outro terminal, rode o frontend: `npm run dev`
+
+O frontend usa proxy de `/api` para `http://localhost:4000` durante dev.
+
 ## Cloudinary (upload e entrega de imagens)
 
 O projeto está integrado com Cloudinary para:
