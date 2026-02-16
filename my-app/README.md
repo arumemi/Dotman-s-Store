@@ -2,6 +2,35 @@
 
 Aplicação React com Vite e React Router para catálogo e carrinho.
 
+## Cloudinary (upload e entrega de imagens)
+
+O projeto está integrado com Cloudinary para:
+
+- upload de imagens no painel `/admin` (via **unsigned upload preset**)
+- otimização automática de imagens Cloudinary na listagem, detalhes e carrinho
+
+### 1) Configurar variáveis de ambiente
+
+Copie `.env.example` para `.env` e ajuste:
+
+- `VITE_CLOUDINARY_CLOUD_NAME`
+- `VITE_CLOUDINARY_UPLOAD_PRESET`
+
+> ⚠️ Não use `API_SECRET` no frontend. Segredos nunca devem ficar em variáveis `VITE_*`.
+
+### 2) Criar upload preset unsigned no Cloudinary
+
+No dashboard Cloudinary:
+
+1. Settings → Upload
+2. Upload presets → Add upload preset
+3. Signing Mode: **Unsigned**
+4. Copie o nome do preset para `VITE_CLOUDINARY_UPLOAD_PRESET`
+
+### 3) Comportamento de fallback
+
+Se o preset não estiver configurado, o painel admin mantém fallback local (imagem comprimida em data URL) para não quebrar o fluxo.
+
 ## Scripts
 
 - `npm run dev`: inicia ambiente de desenvolvimento

@@ -2,16 +2,18 @@ import React from 'react'
 import { ShopContext } from './shopContex'
 import { FiTrash2 } from 'react-icons/fi'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
+import { getOptimizedCloudinaryImageUrl } from '../../utils/cloudinary'
 
 const CartDetails = ({item}) => {
     const {removeFromCart, decreaseItemQuantity, increaseQuantity} = React.useContext(ShopContext);
     const {id, title, price, image, quantity} = item;
+  const optimizedImage = getOptimizedCloudinaryImageUrl(image, { width: 200, height: 200 });
   return (
     <div className='flex flex-col md:flex-row md:items-center justify-between border border-gray-200 rounded-lg p-4 mb-4 bg-white shadow-sm hover:shadow-md transition-shadow duration-200'>
       {/* Product Info Section */}
       <div className='flex items-start space-x-4 flex-1 mb-4 md:mb-0'>
         <img 
-          src={image} 
+          src={optimizedImage} 
           alt={title} 
           className='w-20 h-20 md:w-24 md:h-24 object-contain rounded-lg border border-gray-200 bg-gray-50'
         />

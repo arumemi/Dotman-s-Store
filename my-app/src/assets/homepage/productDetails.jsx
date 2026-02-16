@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ShopContext } from '../components/shopContex.jsx'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { FiArrowLeft, FiShoppingCart } from 'react-icons/fi'
+import { getOptimizedCloudinaryImageUrl } from '../../utils/cloudinary'
 
 const productDetails = () => {
   const { addToCart, products } = React.useContext(ShopContext);
@@ -12,8 +13,25 @@ const productDetails = () => {
   const [offerAmount, setOfferAmount] = React.useState('');
   const [offerSubmitted, setOfferSubmitted] = React.useState(false);
   const [offerError, setOfferError] = React.useState('');
+  const [selectedImage, setSelectedImage] = React.useState('');
 
   const product = products.find((item) => item.id === parseInt(id));
+  const productGallery = React.useMemo(() => {
+    if (!product) return [];
+
+    const images = Array.isArray(product.images)
+      ? product.images.map((img) => String(img || '').trim()).filter(Boolean)
+      : [];
+
+    if (images.length > 0) return images;
+    return product.image ? [product.image] : [];
+  }, [product]);
+
+  React.useEffect(() => {
+    setSelectedImage(productGallery[0] || '');
+  }, [id, productGallery]);
+
+  const productImage = getOptimizedCloudinaryImageUrl(selectedImage || productGallery[0] || product?.image, { width: 900, height: 900 });
 
   // If product not found, show error
   if (!product) {
@@ -122,7 +140,7 @@ const productDetails = () => {
               {/* Product Image */}
               <div className='bg-gray-100 rounded-lg p-8 flex items-center justify-center'>
                 <img 
-                  src={product.image} 
+                  src={productImage} 
                   alt={product.title} 
                   className={`w-full max-w-md h-auto object-contain ${product.outOfStock ? 'opacity-50' : ''}`}
                 />
@@ -134,6 +152,34 @@ const productDetails = () => {
                   {product.category}
                 </span>
               </div>
+
+              {/* Extra thumbnails */}
+              {productGallery.length > 1 && (
+                <div className='mt-4'>
+                  <p className='text-sm font-semibold text-gray-700 mb-2'>more pictures</p>
+                  <div className='flex gap-2 overflow-x-auto pb-1'>
+                    {productGallery.map((imageUrl, imageIndex) => {
+                      const isActive = (selectedImage || productGallery[0]) === imageUrl;
+                      return (
+                        <button
+                          key={`${imageUrl}-${imageIndex}`}
+                          type='button'
+                          onClick={() => setSelectedImage(imageUrl)}
+                          className={`shrink-0 rounded-lg border-2 transition-all duration-200 ${
+                            isActive ? 'border-blue-500 ring-2 ring-blue-200' : 'border-transparent hover:border-gray-300'
+                          }`}
+                        >
+                          <img
+                            src={getOptimizedCloudinaryImageUrl(imageUrl, { width: 140, height: 140 })}
+                            alt={`${product.title} ${imageIndex + 1}`}
+                            className='w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md'
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Right Column - Details */}
@@ -334,6 +380,7 @@ const productDetails = () => {
               .filter(p => p.category === product.category && p.id !== product.id)
               .slice(0, 4)
               .map(relatedProduct => (
+                
                 <Link 
                   key={relatedProduct.id} 
                   to={`/product/${relatedProduct.id}`}
@@ -341,7 +388,12 @@ const productDetails = () => {
                   onClick={() => window.scrollTo(0, 0)}
                 >
                   <img 
-                    src={relatedProduct.image} 
+                    src={getOptimizedCloudinaryImageUrl(
+                      Array.isArray(relatedProduct.images) && relatedProduct.images.length > 0
+                        ? relatedProduct.images[0]
+                        : relatedProduct.image,
+                      { width: 320, height: 320 }
+                    )} 
                     alt={relatedProduct.title} 
                     className='w-full h-32 object-contain mb-2'
                   />

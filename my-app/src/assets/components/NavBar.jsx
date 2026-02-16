@@ -28,9 +28,9 @@ const NavBar = () => {
           {/* Logo */}
           <Link to="/" className='shrink min-w-0'>
             <h1 className='font-bold text-base sm:text-lg lg:text-xl xl:text-2xl text-black hover:text-gray-100 transition-colors duration-200 truncate'>
-              <span className='inline sm:hidden'>Rolfad</span>
-              <span className='hidden sm:inline lg:hidden'>Rolfad Resources</span>
-              <span className='hidden lg:inline'>Rolfad Resources International</span>
+              <span className='inline sm:hidden'>Click & Call </span>
+              <span className='hidden sm:inline lg:hidden'>Click & Call</span>
+              <span className='hidden lg:inline'>Click and call</span>
             </h1>
           </Link>
 

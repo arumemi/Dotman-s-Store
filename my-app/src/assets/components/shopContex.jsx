@@ -3,13 +3,41 @@ import { productsData } from '../../data.jsx';
 
 const ADMIN_PASSWORD = '1914';
 const ADMIN_SESSION_KEY = 'isAdminAuthenticated';
+const PRODUCT_FALLBACK_IMAGE = 'https://via.placeholder.com/500x500?text=Product+Image';
+
+const normalizeProductImages = (productLike) => {
+    const fromArray = Array.isArray(productLike?.images)
+        ? productLike.images.map((image) => String(image || '').trim()).filter(Boolean)
+        : [];
+
+    const singleImage = String(productLike?.image || '').trim();
+
+    if (fromArray.length > 0) {
+        return singleImage && !fromArray.includes(singleImage)
+            ? [singleImage, ...fromArray]
+            : fromArray;
+    }
+
+    if (singleImage) return [singleImage];
+    return [PRODUCT_FALLBACK_IMAGE];
+};
+
+const normalizeProductRecord = (productLike) => {
+    const images = normalizeProductImages(productLike);
+    return {
+        ...productLike,
+        image: images[0],
+        images,
+    };
+};
 
 export const ShopContext = createContext();
 
 export const ShopContextProvider = ({children}) => {
     const [products, setProducts] = useState(() => {
         const savedProducts = localStorage.getItem('products');
-        return savedProducts ? JSON.parse(savedProducts) : productsData;
+        const sourceProducts = savedProducts ? JSON.parse(savedProducts) : productsData;
+        return sourceProducts.map(normalizeProductRecord);
     });
     // Load cart from localStorage on initial render
     const [cartItems, setCartItems] = useState(() => {
@@ -122,6 +150,7 @@ export const ShopContextProvider = ({children}) => {
     const addProduct = (newProduct) => {
         setProducts((prevProducts) => {
             const maxId = prevProducts.length > 0 ? Math.max(...prevProducts.map((item) => item.id)) : 0;
+            const normalizedImages = normalizeProductImages(newProduct);
 
             const productToInsert = {
                 id: maxId + 1,
@@ -129,7 +158,8 @@ export const ShopContextProvider = ({children}) => {
                 price: Number(newProduct.price),
                 category: newProduct.category,
                 description: newProduct.description || 'Product added by admin.',
-                image: newProduct.image || 'https://via.placeholder.com/500x500?text=Product+Image',
+                image: normalizedImages[0],
+                images: normalizedImages,
                 isNew: Boolean(newProduct.isNew),
                 onSale: Boolean(newProduct.onSale),
                 outOfStock: Boolean(newProduct.outOfStock),
@@ -142,13 +172,15 @@ export const ShopContextProvider = ({children}) => {
 
     // Update existing product from admin panel
     const updateProduct = (updatedProduct) => {
+        const normalizedImages = normalizeProductImages(updatedProduct);
         const normalizedProduct = {
             id: updatedProduct.id,
             title: updatedProduct.title,
             price: Number(updatedProduct.price),
             category: updatedProduct.category,
             description: updatedProduct.description || 'Product updated by admin.',
-            image: updatedProduct.image || 'https://via.placeholder.com/500x500?text=Product+Image',
+            image: normalizedImages[0],
+            images: normalizedImages,
             isNew: Boolean(updatedProduct.isNew),
             onSale: Boolean(updatedProduct.onSale),
             outOfStock: Boolean(updatedProduct.outOfStock),
@@ -170,6 +202,7 @@ export const ShopContextProvider = ({children}) => {
                         price: normalizedProduct.price,
                         category: normalizedProduct.category,
                         image: normalizedProduct.image,
+                        images: normalizedProduct.images,
                         outOfStock: normalizedProduct.outOfStock,
                         onSale: normalizedProduct.onSale,
                         isNew: normalizedProduct.isNew,

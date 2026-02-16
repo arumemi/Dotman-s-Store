@@ -1,5 +1,10 @@
 import React from 'react';
 import { ShopContext } from '../components/shopContex';
+import {
+  getOptimizedCloudinaryImageUrl,
+  isCloudinaryConfigured,
+  uploadImageToCloudinary,
+} from '../../utils/cloudinary';
 
 const MAX_IMAGE_WIDTH = 1280;
 const MAX_IMAGE_HEIGHT = 1280;
@@ -76,6 +81,7 @@ const initialFormState = {
   price: '',
   category: '',
   image: '',
+  images: [],
   description: '',
   isNew: false,
   onSale: false,
@@ -85,6 +91,7 @@ const initialFormState = {
 
 const admin = () => {
   const { products, addProduct, updateProduct, removeProduct, isAdminAuthenticated, loginAdmin, logoutAdmin } = React.useContext(ShopContext);
+  const cloudinaryReady = React.useMemo(() => isCloudinaryConfigured(), []);
   const [formData, setFormData] = React.useState(initialFormState);
   const [editingProductId, setEditingProductId] = React.useState(null);
   const [error, setError] = React.useState('');
@@ -94,7 +101,26 @@ const admin = () => {
   const [isCompressingImage, setIsCompressingImage] = React.useState(false);
   const [compressionInfo, setCompressionInfo] = React.useState('');
   const [uploadSuccess, setUploadSuccess] = React.useState('');
+  const [isDraggingGallery, setIsDraggingGallery] = React.useState(false);
   const imageInputRef = React.useRef(null);
+  const galleryInputRef = React.useRef(null);
+
+  const uploadImageFile = async (file) => {
+    if (cloudinaryReady) {
+      const upload = await uploadImageToCloudinary(file, { folder: 'products' });
+      return {
+        url: upload.secureUrl,
+        info: `Uploaded to Cloudinary (${(upload.bytes / 1024).toFixed(0)}KB)`,
+      };
+    }
+
+    const originalSizeKB = file.size / 1024;
+    const { dataUrl, sizeKB } = await compressImageForStorage(file);
+    return {
+      url: dataUrl,
+      info: `Compressed from ${originalSizeKB.toFixed(0)}KB to ${sizeKB.toFixed(0)}KB (Cloudinary preset missing).`,
+    };
+  };
 
   const handleAuthSubmit = (event) => {
     event.preventDefault();
@@ -144,26 +170,119 @@ const admin = () => {
 
     try {
       setIsCompressingImage(true);
-      setCompressionInfo('Compressing image...');
+      setCompressionInfo(cloudinaryReady ? 'Uploading image to Cloudinary...' : 'Compressing image...');
       setUploadSuccess('');
       setFormSuccess('');
-      const originalSizeKB = file.size / 1024;
-      const { dataUrl, sizeKB } = await compressImageForStorage(file);
+
+      const uploadResult = await uploadImageFile(file);
 
       setFormData((prev) => ({
         ...prev,
-        image: dataUrl,
+        image: uploadResult.url,
       }));
       setError('');
-      setCompressionInfo(`Compressed from ${originalSizeKB.toFixed(0)}KB to ${sizeKB.toFixed(0)}KB`);
-      setUploadSuccess('✅ Image uploaded successfully.');
-    } catch {
-      setError('Could not read the selected image. Please try again.');
+      setCompressionInfo(uploadResult.info);
+      setUploadSuccess(cloudinaryReady
+        ? '✅ Cover image uploaded to Cloudinary successfully.'
+        : '✅ Cover image uploaded locally. Add Cloudinary preset to upload to cloud.');
+    } catch (uploadError) {
+      setError(uploadError?.message || 'Could not upload the selected image. Please try again.');
       setCompressionInfo('');
       setUploadSuccess('');
     } finally {
       setIsCompressingImage(false);
     }
+  };
+
+  const handleGalleryImageUpload = async (event) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    const hasInvalidFile = files.some((file) => !file.type.startsWith('image/'));
+    if (hasInvalidFile) {
+      setError('Please select only image files for additional pictures.');
+      return;
+    }
+
+    try {
+      setIsCompressingImage(true);
+      setCompressionInfo(cloudinaryReady
+        ? `Uploading ${files.length} image(s) to Cloudinary...`
+        : `Compressing ${files.length} image(s)...`);
+      setUploadSuccess('');
+      setFormSuccess('');
+
+      const uploadedImages = [];
+      for (const file of files) {
+        const result = await uploadImageFile(file);
+        uploadedImages.push(result.url);
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...uploadedImages],
+      }));
+
+      setError('');
+      setCompressionInfo('');
+      setUploadSuccess(cloudinaryReady
+        ? `✅ ${uploadedImages.length} additional image(s) uploaded to Cloudinary.`
+        : `✅ ${uploadedImages.length} additional image(s) uploaded locally.`);
+    } catch (uploadError) {
+      setError(uploadError?.message || 'Could not upload one or more images. Please try again.');
+      setCompressionInfo('');
+      setUploadSuccess('');
+    } finally {
+      setIsCompressingImage(false);
+      if (galleryInputRef.current) {
+        galleryInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleGalleryDrop = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingGallery(false);
+
+    const files = Array.from(event.dataTransfer?.files || []);
+    if (files.length === 0) return;
+
+    const hasInvalidFile = files.some((file) => !file.type.startsWith('image/'));
+    if (hasInvalidFile) {
+      setError('Only image files can be dropped here.');
+      return;
+    }
+
+    await handleGalleryImageUpload({ target: { files } });
+  };
+
+  const handleMakeCover = (indexToPromote) => {
+    setFormData((prev) => {
+      const promotedImage = prev.images[indexToPromote];
+      if (!promotedImage) return prev;
+
+      const remainingImages = prev.images.filter((_, index) => index !== indexToPromote);
+      const nextAdditional = [...remainingImages];
+
+      if (prev.image && prev.image !== promotedImage && !nextAdditional.includes(prev.image)) {
+        nextAdditional.unshift(prev.image);
+      }
+
+      return {
+        ...prev,
+        image: promotedImage,
+        images: nextAdditional,
+      };
+    });
+    setUploadSuccess('✅ Cover image updated from gallery.');
+  };
+
+  const handleRemoveAdditionalImage = (indexToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, index) => index !== indexToRemove),
+    }));
   };
 
   const handleSubmit = (event) => {
@@ -191,8 +310,17 @@ const admin = () => {
       category: formData.category.trim(),
       description: formData.description.trim(),
       image: formData.image.trim(),
+      images: formData.images,
       price: parsedPrice,
     };
+
+    const cleanAdditionalImages = normalizedProduct.images
+      .map((img) => String(img || '').trim())
+      .filter(Boolean);
+
+    const mergedImages = [normalizedProduct.image, ...cleanAdditionalImages].filter(Boolean);
+    normalizedProduct.images = [...new Set(mergedImages)];
+    normalizedProduct.image = normalizedProduct.images[0] || '';
 
     if (editingProductId !== null) {
       updateProduct({ ...normalizedProduct, id: editingProductId });
@@ -210,6 +338,9 @@ const admin = () => {
     if (imageInputRef.current) {
       imageInputRef.current.value = '';
     }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
+    }
   };
 
   const handleEditStart = (product) => {
@@ -218,11 +349,18 @@ const admin = () => {
     setFormSuccess('');
     setCompressionInfo('');
     setUploadSuccess('');
+    const productImages = Array.isArray(product.images)
+      ? product.images.map((img) => String(img || '').trim()).filter(Boolean)
+      : [];
+    const coverImage = (product.image || productImages[0] || '').trim();
+    const additionalImages = productImages.filter((img) => img !== coverImage);
+
     setFormData({
       title: product.title || '',
       price: String(product.price ?? ''),
       category: product.category || '',
-      image: product.image || '',
+      image: coverImage,
+      images: additionalImages,
       description: product.description || '',
       isNew: Boolean(product.isNew),
       onSale: Boolean(product.onSale),
@@ -232,6 +370,9 @@ const admin = () => {
 
     if (imageInputRef.current) {
       imageInputRef.current.value = '';
+    }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -246,6 +387,9 @@ const admin = () => {
     setUploadSuccess('');
     if (imageInputRef.current) {
       imageInputRef.current.value = '';
+    }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
     }
   };
 
@@ -388,6 +532,11 @@ const admin = () => {
                   className='w-full border border-gray-300 rounded-lg px-3 py-2 bg-white file:mr-4 file:py-2 file:px-3 file:border-0 file:rounded-md file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200'
                 />
                 <p className='text-xs text-gray-500 mt-1'>On phone, this lets you choose from camera or gallery.</p>
+                <p className='text-xs mt-1 text-gray-600'>
+                  {cloudinaryReady
+                    ? 'Cloudinary upload is active for this project.'
+                    : 'Cloudinary upload preset not configured. Using local compressed image fallback.'}
+                </p>
                 {compressionInfo && (
                   <p className='text-xs text-green-700 mt-1'>{compressionInfo}</p>
                 )}
@@ -398,11 +547,97 @@ const admin = () => {
                 )}
               </div>
 
+              <div className='bg-blue-50/70 border border-blue-200 rounded-xl p-4 sm:p-5'>
+                <div className='flex items-start justify-between gap-3 mb-3'>
+                  <div>
+                    <h3 className='text-sm sm:text-base font-semibold text-gray-800'>More product pictures</h3>
+                    <p className='text-xs sm:text-sm text-gray-600'>Upload extra photos to show different angles and details.</p>
+                  </div>
+                  <span className='text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded-full'>
+                    {formData.images.length} added
+                  </span>
+                </div>
+
+                <input
+                  ref={galleryInputRef}
+                  onChange={handleGalleryImageUpload}
+                  disabled={isCompressingImage}
+                  type='file'
+                  multiple
+                  accept='image/*'
+                  className='hidden'
+                />
+
+                <div
+                  onDragEnter={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setIsDraggingGallery(true);
+                  }}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setIsDraggingGallery(true);
+                  }}
+                  onDragLeave={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setIsDraggingGallery(false);
+                  }}
+                  onDrop={handleGalleryDrop}
+                  className={`mt-2 rounded-xl border-2 border-dashed p-4 sm:p-5 text-center transition-all duration-200 ${
+                    isDraggingGallery
+                      ? 'border-blue-500 bg-blue-100 shadow-inner'
+                      : 'border-blue-300 bg-white hover:border-blue-400 hover:bg-blue-50'
+                  }`}
+                >
+                  <p className='text-sm sm:text-base font-semibold text-gray-800'>Drag & drop images here</p>
+                  <p className='text-xs sm:text-sm text-gray-600 mt-1'>or choose files from your device</p>
+                  <button
+                    type='button'
+                    onClick={() => galleryInputRef.current?.click()}
+                    className='mt-3 inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md'
+                  >
+                    upload pictures
+                  </button>
+                </div>
+
+                {formData.images.length > 0 ? (
+                  <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 mt-4'>
+                    {formData.images.map((imageUrl, index) => (
+                      <div key={`${imageUrl}-${index}`} className='relative group border border-gray-200 rounded-lg overflow-hidden bg-white'>
+                        <img
+                          src={getOptimizedCloudinaryImageUrl(imageUrl, { width: 260, height: 260 })}
+                          alt={`Additional product ${index + 1}`}
+                          className='w-full h-24 sm:h-28 object-cover'
+                        />
+                        <button
+                          type='button'
+                          onClick={() => handleRemoveAdditionalImage(index)}
+                          className='absolute top-1.5 right-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-md shadow transition-colors duration-200'
+                        >
+                          remove
+                        </button>
+                        <button
+                          type='button'
+                          onClick={() => handleMakeCover(index)}
+                          className='absolute bottom-1.5 left-1.5 bg-blue-500/95 hover:bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-md shadow transition-colors duration-200'
+                        >
+                          make cover
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className='text-xs text-gray-500 mt-3'>No extra images yet. Upload multiple for a better product gallery.</p>
+                )}
+              </div>
+
               {formData.image && (
                 <div>
                   <p className='text-sm font-medium text-gray-700 mb-2'>Image Preview</p>
                   <img
-                    src={formData.image}
+                    src={getOptimizedCloudinaryImageUrl(formData.image, { width: 220, height: 220 })}
                     alt='Product preview'
                     className='w-28 h-28 object-cover rounded-lg border border-gray-300'
                   />
@@ -483,7 +718,7 @@ const admin = () => {
                   {products.map((product) => (
                     <div key={product.id} className='border border-gray-300 rounded-lg p-3 flex items-center gap-3'>
                       <img
-                        src={product.image || 'https://via.placeholder.com/80x80?text=No+Image'}
+                        src={getOptimizedCloudinaryImageUrl(product.image || 'https://via.placeholder.com/80x80?text=No+Image', { width: 160, height: 160 })}
                         alt={product.title}
                         className='w-16 h-16 object-cover rounded-md border border-gray-200'
                       />
@@ -491,6 +726,7 @@ const admin = () => {
                       <div className='flex-1 min-w-0'>
                         <p className='font-semibold text-gray-800 truncate'>{product.title}</p>
                         <p className='text-sm text-gray-600'>Category: {product.category || 'N/A'}</p>
+                        <p className='text-xs text-blue-700'>Photos: {Array.isArray(product.images) ? product.images.length : (product.image ? 1 : 0)}</p>
                         <p className='text-sm font-semibold text-red-600'>₦ {Number(product.price).toFixed(2)}</p>
                       </div>
 

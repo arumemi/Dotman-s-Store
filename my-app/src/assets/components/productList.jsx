@@ -1,6 +1,7 @@
 import React from 'react'
 import { ShopContext } from './shopContex'
 import { Link } from 'react-router-dom'
+import { getOptimizedCloudinaryImageUrl } from '../../utils/cloudinary'
 
 /**
  * ProductList Component
@@ -22,7 +23,9 @@ const productList = () => {
         // Map through products array and render a card for each product
         products.map((product) => {
           // Destructure product properties for easier access
-          const {id, title, price, image, isNew, onSale, outOfStock, negotiable} = product;
+          const {id, title, price, image, images, isNew, onSale, outOfStock, negotiable} = product;
+          const displayImage = Array.isArray(images) && images.length > 0 ? images[0] : image;
+          const optimizedImage = getOptimizedCloudinaryImageUrl(displayImage, { width: 600, height: 600 });
           return (
             // Product card with hover effects
             <div key={id} className='bg-white border border-gray-400 rounded-xl p-5 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative'>
@@ -52,7 +55,7 @@ const productList = () => {
               
               {/* Product image - clickable link to product details page */}
               <Link to={`/product/${id}`}>
-                <img src={image} alt={title} className={`w-full h-\[250px] object-contain mb-4 rounded-lg ${outOfStock ? 'opacity-50' : ''}`} />
+                <img src={optimizedImage} alt={title} className={`w-full h-\[250px] object-contain mb-4 rounded-lg ${outOfStock ? 'opacity-50' : ''}`} />
               </Link>
               
               {/* Product information section */}
@@ -63,18 +66,27 @@ const productList = () => {
                 <p className='text-red-600 font-bold text-xl'>₦ {price.toFixed(2)}</p>
               </div>
               
-              {/* Add to cart button - disabled when out of stock */}
-              <button 
-                onClick={() => addToCart(product)} 
-                disabled={outOfStock}
-                className={`mt-auto w-full font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${
-                  outOfStock 
-                    ? 'bg-gray-400 cursor-not-allowed text-gray-700' 
-                    : 'bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-white hover:shadow-lg transform hover:scale-105 active:scale-95'
-                }`}
-              >
-                {outOfStock ? 'unavailable' : 'add to cart'}
-              </button>
+              {/* Actions */}
+              <div className='mt-auto grid grid-cols-1 sm:grid-cols-2 gap-2'>
+                <button 
+                  onClick={() => addToCart(product)} 
+                  disabled={outOfStock}
+                  className={`w-full font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${
+                    outOfStock 
+                      ? 'bg-gray-400 cursor-not-allowed text-gray-700' 
+                      : 'bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-white hover:shadow-lg transform hover:scale-105 active:scale-95'
+                  }`}
+                >
+                  {outOfStock ? 'unavailable' : 'add to cart'}
+                </button>
+
+                <Link
+                  to={`/product/${id}`}
+                  className='w-full text-center font-semibold py-3 px-4 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 active:bg-red-200 transition-all duration-300 hover:shadow-md'
+                >
+                  see more
+                </Link>
+              </div>
             </div>
           )
         })
