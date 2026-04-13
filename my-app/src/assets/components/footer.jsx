@@ -46,9 +46,22 @@ const footer = () => {
         {/* Bottom Bar */}
         <div className='border-t border-gray-800 pt-8'>
           <div className='flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0'>
-            <p className='text-gray-400 text-sm text-center sm:text-left'>
-              © {new Date().getFullYear()} Click & Call. All rights reserved.
-            </p>
+            <div className='text-center sm:text-left'>
+              <p className='text-gray-400 text-sm'>
+                © {new Date().getFullYear()} Click & Call. All rights reserved.
+              </p>
+              <p className='text-xs mt-2 text-gray-300'>
+                This site is created with by:{' '}
+                <a
+                  href='https://sitesprofissionai.com/'
+                  target='_blank'
+                  rel='noreferrer'
+                  className='font-semibold text-red-400 hover:text-red-300 active:text-red-200 underline decoration-red-400/60 hover:decoration-red-300 transition-all duration-300'
+                >
+                  ESE FAPS
+                </a>
+              </p>
+            </div>
             <div className='flex space-x-6'>
               <a href='#' className='text-gray-400 hover:text-white transition-colors duration-200' aria-label='Facebook'>
                 <svg className='h-6 w-6' fill='currentColor' viewBox='0 0 24 24'>
